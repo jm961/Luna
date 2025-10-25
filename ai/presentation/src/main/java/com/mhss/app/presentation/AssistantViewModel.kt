@@ -205,6 +205,19 @@ class AssistantViewModel(
             is AssistantEvent.RemoveAttachment -> {
                 attachments.removeAt(event.index)
             }
+
+            AssistantEvent.StartVoiceInput -> {
+                uiState = uiState.copy(isRecording = true)
+            }
+
+            AssistantEvent.StopVoiceInput -> {
+                uiState = uiState.copy(isRecording = false)
+            }
+
+            is AssistantEvent.UpdateVoiceText -> {
+                // Voice text will be updated in the screen directly
+                // This event is here for potential future use
+            }
         }
     }
 
@@ -251,6 +264,7 @@ class AssistantViewModel(
         val error: NetworkResult.Failure? = null,
         val noteView: ItemView = ItemView.LIST,
         val searchNotes: List<Note> = emptyList(),
-        val searchTasks: List<Task> = emptyList()
+        val searchTasks: List<Task> = emptyList(),
+        val isRecording: Boolean = false
     )
 }

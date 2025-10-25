@@ -1,8 +1,13 @@
 package com.mhss.app.presentation
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -88,6 +93,28 @@ fun AssistantScreen(
     var openTaskSheet by remember { mutableStateOf(false) }
     val lazyListState = rememberLazyListState()
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Speech-to-text launcher using Android's default speech recognition
+    val speechToTextLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                ?.firstOrNull()
+            spokenText?.let { recognizedText ->
+                text = if (text.isNotEmpty()) "$text $recognizedText" else recognizedText
+            }
+        }
+    }
+
+    val handleVoiceInput: () -> Unit = {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...")
+        }
+        speechToTextLauncher.launch(intent)
+    }
+
     Scaffold(
         topBar = {
             MyBrainAppBar(stringResource(id = R.string.assistant))
@@ -105,6 +132,7 @@ fun AssistantScreen(
                     )
                 },
                 loading = loading,
+                onVoiceClick = handleVoiceInput,
                 onSend = {
                     viewModel.onEvent(
                         AssistantEvent.SendMessage(

@@ -10,4 +10,7 @@ sealed interface AssistantEvent {
     data class AddAttachmentTask(val id: Int): AssistantEvent
     data object AddAttachmentEvents: AssistantEvent
     data class RemoveAttachment(val index: Int): AssistantEvent
+    data object StartVoiceInput: AssistantEvent
+    data object StopVoiceInput: AssistantEvent
+    data class UpdateVoiceText(val text: String): AssistantEvent
 }

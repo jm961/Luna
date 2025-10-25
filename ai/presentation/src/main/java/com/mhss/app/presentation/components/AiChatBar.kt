@@ -43,10 +43,12 @@ fun AiChatBar(
     text: String,
     enabled: Boolean,
     loading: Boolean,
+    isRecording: Boolean = false,
     attachments: List<AiMessageAttachment>,
     onTextChange: (String) -> Unit,
     onAttachClick: () -> Unit,
     onRemoveAttachment: (Int) -> Unit,
+    onVoiceClick: () -> Unit,
     onSend: () -> Unit,
 ) {
     Column(
@@ -85,11 +87,20 @@ fun AiChatBar(
                         disabledIndicatorColor = Color.Transparent
                     ),
                     trailingIcon = {
-                        IconButton(onClick = { onAttachClick() }) {
-                            Icon(
-                                painterResource(id = R.drawable.ic_attach),
-                                contentDescription = null
-                            )
+                        Row {
+                            IconButton(onClick = { onVoiceClick() }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_mic),
+                                    contentDescription = "Voice input",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            IconButton(onClick = { onAttachClick() }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_attach),
+                                    contentDescription = null
+                                )
+                            }
                         }
                     },
                 )
@@ -179,6 +190,7 @@ fun AiChatBarPreview() {
             onTextChange = {},
             onAttachClick = {},
             onRemoveAttachment = {},
+            onVoiceClick = {},
             onSend = {},
         )
     }
